@@ -1,3 +1,4 @@
+# 通过FB API获取特定用户的推文
 import requests
 import time
 import pickle
