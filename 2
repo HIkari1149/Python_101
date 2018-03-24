@@ -1,0 +1,22 @@
+# coding=utf-8
+import sys
+import re
+import requests
+from bs4 import BeautifulSoup
+r=requests.get("https://book.douban.com/subject/26708119/comments/")
+print(r.status_code)
+#r.encoding="utf-8"
+bsObj=BeautifulSoup(r.text,"html.parser")
+for item in bsObj.findAll("p","comment-content"):
+    try:
+        print(item.string)
+    except:
+        continue
+
+pattern=re.compile('<span class="user-stars allstar(.*?)rating"')
+p=re.findall(pattern,r.text)
+sum=0
+for st in p:
+    sum=sum+(int)(st)
+print(sum)
+
