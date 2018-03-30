@@ -1,0 +1,20 @@
+import csv
+with open("C:/Users/mac/Desktop/taiwan_district.csv",encoding="utf-8") as data:
+    reader=csv.reader(data)
+    fname="C:/Users/mac/Desktop/tmp"
+    with open(fname+".kml","w",encoding="utf-8") as f:
+        f.write("<?xml version='1.0' encoding='UTF-8'?>\n")    
+        f.write("<kml xmlns='http://earth.google.com/kml/2.1'>\n")
+        f.write("<Document>\n")
+        f.write("   <name>" + fname + '.kml' +"</name>\n")
+        for row in reader:
+            f.write("   <Placemark>\n")
+            print(str(row[1]))
+            f.write("       <name>" + str(row[1]) + "</name>\n")
+            f.write("       <description>" + str(row[1]) + "</description>\n")
+            f.write("       <Point>\n")
+            f.write("           <coordinates>" + str(row[6]) + "," + str(row[7])  + "</coordinates>\n")
+            f.write("       </Point>\n")
+            f.write("   </Placemark>\n")
+        f.write("</Document>\n")
+        f.write("</kml>\n")
