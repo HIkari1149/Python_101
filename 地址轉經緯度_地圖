@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+import googlemaps
+import pandas as pd
+import csv
+gmaps=googlemaps.Client(key='AIzaSyBWPBWzrntYttKndB_cAHojxfW1s0AbNKA')
+
+with open ("C://Users//mac//Desktop//1.csv",'r',encoding='utf-8') as f:
+    reader=csv.reader(f)
+    cnt=0
+    for row in reader:     
+        if(cnt>=1):
+            geocode_res=gmaps.geocode(row[4])
+            loc=geocode_res[0]['geometry']['location']
+            print(loc)
+        cnt=cnt+1    
+        
+    
