@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import folium
+import webbrowser
+path="C://Users//mac//Desktop//mmp.html"
+
+df=pd.read_csv("C://Users//mac//Desktop//2.csv")
+
+tooltip="Click"
+mp=folium.Map(location=[df['lat'].mean(),df['lng'].mean()] , zoom_start=10,tiles='Mapbox bright')
+#folium.Marker([45.3288, -121.6625], popup='<i>Mt. Hood Meadows</i>').add_to(mp)
+for idx in df.index:
+    if(idx>=1):
+        lat=df.loc[idx][1]
+        lng=df.loc[idx][2]
+        print(lat,lng)
+        folium.Marker([lat,lng],popup='<i>site</i>',
+                       icon=folium.Icon(color='red', icon='info-sign')).add_to(mp)
+mp.save(path)
+webbrowser.open(path)
