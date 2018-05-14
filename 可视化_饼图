@@ -1,0 +1,39 @@
+import matplotlib.pyplot as plt  
+  
+# 设置绘图的主题风格（不妨使用R中的ggplot分隔）  
+plt.style.use('ggplot')  
+edu = [0.1634,0.0982,0.6711,0.0687]   
+labels = ['House','Car','Motor','Bicyle']  
+  
+explode = [0,0.1,0,0]  #
+colors=['#9999ff','#ff9999','#7777aa','#2442aa'] # 自定义颜色  
+  
+
+  
+# 将横、纵坐标轴标准化处理，保证饼图是一个正圆，否则为椭圆  
+plt.axes(aspect='equal')  
+  
+# 控制x轴和y轴的范围  
+plt.xlim(0,3)  
+plt.ylim(0,4)  
+  
+# 绘制饼图  
+plt.pie(x = edu, # 绘图数据  
+        explode=explode, # 突出显示大专人群  
+        labels=labels, # 添加教育水平标签  
+        colors=colors, # 设置饼图的自定义填充色  
+        autopct='%.1f%%', # 设置百分比的格式，这里保留一位小数  
+        pctdistance=0.8,  # 设置百分比标签与圆心的距离  
+        labeldistance = 1.2, # 设置教育水平标签与圆心的距离  
+        startangle = 180, # 设置饼图的初始角度  
+        radius = 3, # 设置饼图的半径  
+        counterclock = False, # 是否逆时针，这里设置为顺时针方向  
+        wedgeprops = {'linewidth': 2.5, 'edgecolor':'green'},# 设置饼图内外边界的属性值  
+        textprops = {'fontsize':25,'color':'k'}, # 设置文本标签的属性值  
+        center = (1.8,1.8), # 设置饼图的原点  
+        frame = 0 )# 是否显示饼图的图框，这里设置显示  
+# 添加图标题  
+#plt.title('Theft',fontsize=50)  
+
+# 显示图形  
+plt.show()  
