@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 15 20:03:56 2018
+
+@author: mac
+"""
+
+import pandas as pd
+import collections
+import matplotlib.mlab as mlab  
+import matplotlib.pyplot as plt  
+df=pd.read_csv("C://Users//mac//Desktop//1.csv")
+t=df['發生(現)地點']
+place=[]
+fre=[]
+for row in t.index:
+    place.append(t.loc[row][3:6])
+place_set=list(set(place)) # set of district 
+for i in place_set:
+    fre.append(collections.Counter(place)[i])    # the frequency of Crime Happend in some district
+
+#fig = plt.figure()
+fig=plt.pie(fre,labels=place_set,autopct='%1.2f%%',radius=3, textprops = {'fontsize':20, 'color':'k'}) #画饼图（数据，数据对应的标签，百分数保留两位小数点）
+#plt.pie(fre,labels=place_set,autopct='%1.2f%%',radius=3) #画饼图（数据，数据对应的标签，百分数保留两位小数点）
+#plt.title("Hikari1149 chart")
+
+plt.show()  
+plt.savefig("C://Users//mac//Desktop//District.jpg")
