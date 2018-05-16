@@ -1,0 +1,31 @@
+import pandas as pd
+import calendar
+import collections
+import matplotlib.pyplot as plt
+df=pd.read_csv("C://Users//mac//Desktop//1.csv")
+
+add=19110000
+a=df['發生(現)日期']
+#day=["MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY","SUNDAY"]
+day=[1,2,3,4,5,6,7]
+fre=[]
+t=[]
+tmp=[]
+for row in a.index:
+    val=a.loc[row]+add
+    t.append(str(val))
+for s in t:
+    y=int(s[0:4])
+    m=int(s[4:6])
+    d=int(s[6:8])
+    val=calendar.weekday(y,m,d)
+    tmp.append(val)
+for i in range(0,7):
+    fre.append(collections.Counter(tmp)[i])
+
+plt.figure(figsize=(12,10))
+plt.xlabel("Date")
+plt.ylabel("Count")
+plt.tick_params(labelsize=23)  
+plt.bar(day,fre)
+
