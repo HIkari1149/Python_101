@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 15 20:03:56 2018
+
+@author: mac
+"""
+
+import pandas as pd
+import collections
+import matplotlib.mlab as mlab  
+import matplotlib.pyplot as plt  
+df=pd.read_csv("C://Users//mac//Desktop//1.csv")
+t=df['發生時段']
+tim=[]
+fre=[]
+for row in t:
+    tim.append(str(row))
+tim_set=list(set(tim))
+tim_set.sort()
+for i in tim_set:
+    fre.append(collections.Counter(tim)[i])
+
+plt.figure(figsize=(14,10))
+plt.xlabel("Time",fontsize=28)
+plt.ylabel("Count",fontsize=26)
+plt.tick_params(labelsize=23)  
+#plt.legend()
+plt.plot(tim_set,fre,marker='D',color='r',linewidth=3)
+plt.show()
