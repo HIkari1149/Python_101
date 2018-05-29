@@ -1,0 +1,34 @@
+import pymysql
+conn=pymysql.connect(host='127.0.0.1',user='root',passwd='wu221166',db='district',charset="utf8")
+cur=conn.cursor()
+
+def get_area(latitude, longitude, dis):
+    """
+    确定查询经纬度范围
+    :param latitude:中心纬度
+    :param longitude:中心经度
+    :param dis:半径
+    :return:(minlat, maxlat, minlng, maxlng)
+    """
+    r = 6371.137
+    dlng = 2 * math.asin(math.sin(dis / (2 * r)) / math.cos(latitude * math.pi / 180))
+    dlng = dlng * 180 / math.pi
+    dlat = dis / r
+    dlat = dlat * 180 / math.pi
+    minlat = latitude - dlat
+    maxlat = latitude + dlat
+    minlng = longitude - dlng
+    maxlng = longitude + dlng
+    return minlat, maxlat, minlng, maxlng
+def sql_select(lat,lng,minlat,maxlat,minlng,maxlng):
+    sql="SELECT * FROM taoyuan WHERE breau = '中壢分局'  AND {} > {} AND {} < {} AND {} > {} AND {} < {}".format(lat,minlat,lat,maxlat,lng,minlng,lng,maxlng)
+    print(sql)
+    sql_select=sql
+    cur.execute(sql_select)
+    reslut=cur.fetchall()
+    print (reslut)
+    print(len(reslut))
+a,b,c=map(float,input().split())
+sql_select(a,b,*get_area(a,b,c))
+cur.close()
+conn.close()
