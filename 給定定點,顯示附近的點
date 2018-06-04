@@ -1,0 +1,77 @@
+import pymysql
+import math
+import urllib  
+from urllib.request import urlopen
+import json  
+import pandas as pd
+import seaborn as sns
+import folium
+import webbrowser
+import numpy as np
+from folium.plugins import HeatMap
+conn=pymysql.connect(host='127.0.0.1',user='root',passwd='wu221166',db='district',charset="utf8")
+cur=conn.cursor()
+serviceurl = 'https://maps.googleapis.com/maps/api/geocode/json?'
+def getGeoForAddress(address): 
+    while True:
+        if len(address) < 1:break
+        url = serviceurl + urllib.parse.urlencode({'sensor':'false','address':address,'key':'AIzaSyCjaVLvkHaNblbIMGug7xOaHUgdq-waOqE'})
+        #print('Retrieving:',url)
+        uh = urllib.request.urlopen(url)
+        data = uh.read()
+        try: js = json.loads(data.decode())
+        except: js = None
+        if 'status' not in js or js['status'] != 'OK':
+            print('===Failed To Retrieve===')
+            print(data)
+            continue
+        lat = js['results'][0]['geometry']['location']['lat']
+        lng = js['results'][0]['geometry']['location']['lng']
+        return lat,lng
+def get_area(latitude, longitude, dis):
+    """
+    确定查询经纬度范围
+    :param latitude:中心纬度
+    :param longitude:中心经度
+    :param dis:半径
+    :return:(minlat, maxlat, minlng, maxlng)
+    """
+    r = 6371.137
+    dlng = 2 * math.asin(math.sin(dis / (2 * r)) / math.cos(latitude * math.pi / 180))
+    dlng = dlng * 180 / math.pi
+    dlat = dis / r
+    dlat = dlat * 180 / math.pi
+    minlat = latitude - dlat
+    maxlat = latitude + dlat
+    minlng = longitude - dlng
+    maxlng = longitude + dlng
+    return minlat, maxlat, minlng, maxlng
+def sql_select(lat,lng,minlat,maxlat,minlng,maxlng):
+    sql="SELECT lat,lon FROM taoyuan WHERE lat > {} AND lat < {} AND lon > {} AND lon < {}".format(minlat,maxlat,minlng,maxlng)
+    print(sql)
+    sql_select=sql
+    cur.execute(sql_select)    
+    reslut=cur.fetchall()
+    return reslut
+def display():
+    c=float(input("DISTANCE:"))
+    ad=input("LOCATION:")
+    lat,lng=getGeoForAddress(ad)
+    res=sql_select(lat,lng,*get_area(lat,lng,c))
+    df=pd.DataFrame(list(res))
+    sz=min(20,len(res))
+    lat1=np.array(df[0])
+    lng1=np.array(df[1])
+    pop=np.ones(20)
+    data=[[lat1[i],lng1[i],pop[i]] for i in range(sz)]
+    map_osm=folium.Map(location=[df[0].mean(),df[1].mean()],zoom_start=15-c)
+    HeatMap(data).add_to(map_osm)
+    path='C://Users//mac//Desktop//mp1.html'
+    map_osm.save(path)
+    webbrowser.open(path)     
+display()
+cur.close()
+conn.close()
+ 
+
+
