@@ -1,0 +1,66 @@
+from flask import Flask,request,render_template
+from flask import *
+import urllib
+from urllib.request import urlopen
+import json
+import math
+import sqlite3
+
+app = Flask(__name__)
+def sql_select(lat,lng,minlat,maxlat,minlng,maxlng):
+    conn = sqlite3.connect('C:/Users/mac/PycharmProjects/Flask1/district.db')
+    cur = conn.cursor()
+    sql="SELECT lat,lon FROM district WHERE lat > {} AND lat < {} AND lon > {} AND lon < {}".format(minlat,maxlat,minlng,maxlng)
+    sql_select=sql
+    cur.execute(sql_select)
+    reslut=cur.fetchall()
+    print(reslut)
+    conn.close()
+    return reslut
+def getGeoForAddress(address):
+    serviceurl = 'https://maps.googleapis.com/maps/api/geocode/json?'
+    while True:
+        if len(address) < 1:break
+        url = serviceurl + urllib.parse.urlencode({'sensor':'false','address':address,'key':'AIzaSyCjaVLvkHaNblbIMGug7xOaHUgdq-waOqE'})
+        print('Retrieving:',url)
+        uh = urllib.request.urlopen(url)
+        data = uh.read()
+        try: js = json.loads(data.decode())
+        except: js = None
+        if 'status' not in js or js['status'] != 'OK':
+            print('===Failed To Retrieve===')
+            print(data)
+            continue
+        lat = js['results'][0]['geometry']['location']['lat']
+        lng = js['results'][0]['geometry']['location']['lng']
+        return lat,lng
+def get_area(latitude, longitude, dis):
+    """
+    确定查询经纬度范围
+    :param latitude:中心纬度
+    :param longitude:中心经度
+    :param dis:半径
+    :return:(minlat, maxlat, minlng, maxlng)
+    """
+    r = 6371.137
+    dlng = 2 * math.asin(math.sin(dis / (2 * r)) / math.cos(latitude * math.pi / 180))
+    dlng = dlng * 180 / math.pi
+    dlat = dis / r
+    dlat = dlat * 180 / math.pi
+    minlat = latitude - dlat
+    maxlat = latitude + dlat
+    minlng = longitude - dlng
+    maxlng = longitude + dlng
+    return minlat, maxlat, minlng, maxlng
+@app.route('/',methods=['GET','POST'])
+def fun():
+        if(request.method=='POST'):
+            loc=request.form['location']
+            lat,lng=getGeoForAddress(loc)
+            print(lat)
+            res=sql_select(lat,lng,*get_area(lat,lng,1.0))
+            return render_template("map2.html",loc=loc,lat=lat,lng=lng,res=res,Sz=len(res))
+        else:
+            return render_template("index.html")
+if __name__ == '__main__':
+    app.run()
